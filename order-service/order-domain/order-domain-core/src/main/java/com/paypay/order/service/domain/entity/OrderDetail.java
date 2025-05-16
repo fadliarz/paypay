@@ -7,6 +7,7 @@ import java.util.UUID;
 public class OrderDetail {
 
   private UUID orderDetailId;
+  private UUID orderId;
   private UUID storeId;
   private List<OrderItem> orderItems;
   private BigDecimal price;
