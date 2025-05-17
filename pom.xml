@@ -71,6 +71,12 @@
         <artifactId>order-application-service</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>order-container</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
