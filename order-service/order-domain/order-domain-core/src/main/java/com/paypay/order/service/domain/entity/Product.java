@@ -5,19 +5,11 @@ import java.util.UUID;
 
 public class Product {
 
-  private UUID productId;
-  private String image;
-  private String name;
-  private String description;
-  private BigDecimal price;
-
-  private Product(Builder builder) {
-    productId = builder.productId;
-    image = builder.image;
-    name = builder.name;
-    description = builder.description;
-    price = builder.price;
-  }
+  private final UUID productId;
+  private final String image;
+  private final String name;
+  private final String description;
+  private final BigDecimal price;
 
   public UUID getProductId() {
     return productId;
@@ -39,6 +31,14 @@ public class Product {
     return price;
   }
 
+  private Product(Builder builder) {
+    productId = builder.productId;
+    image = builder.image;
+    name = builder.name;
+    description = builder.description;
+    price = builder.price;
+  }
+
   public static final class Builder {
 
     private UUID productId;
@@ -53,27 +53,27 @@ public class Product {
       return new Builder();
     }
 
-    public Builder productId(UUID val) {
+    public Builder setProductId(UUID val) {
       productId = val;
       return this;
     }
 
-    public Builder image(String val) {
+    public Builder setImage(String val) {
       image = val;
       return this;
     }
 
-    public Builder name(String val) {
+    public Builder setName(String val) {
       name = val;
       return this;
     }
 
-    public Builder description(String val) {
+    public Builder setDescription(String val) {
       description = val;
       return this;
     }
 
-    public Builder price(BigDecimal val) {
+    public Builder setPrice(BigDecimal val) {
       price = val;
       return this;
     }

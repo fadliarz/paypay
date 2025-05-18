@@ -5,13 +5,15 @@ import java.util.UUID;
 
 public class OrderItem {
 
-  private UUID orderItemId;
-  private Product product;
-  private Integer quantity;
-  private BigDecimal price;
+  private final UUID orderItemId;
+  private final UUID orderId;
+  private final Product product;
+  private final Integer quantity;
+  private final BigDecimal price;
 
   private OrderItem(Builder builder) {
     orderItemId = builder.orderItemId;
+    orderId = builder.orderId;
     product = builder.product;
     quantity = builder.quantity;
     price = builder.price;
@@ -19,6 +21,10 @@ public class OrderItem {
 
   public UUID getOrderItemId() {
     return orderItemId;
+  }
+
+  public UUID getOrderId() {
+    return orderId;
   }
 
   public Product getProduct() {
@@ -36,6 +42,7 @@ public class OrderItem {
   public static final class Builder {
 
     private UUID orderItemId;
+    private UUID orderId;
     private Product product;
     private Integer quantity;
     private BigDecimal price;
@@ -46,22 +53,27 @@ public class OrderItem {
       return new Builder();
     }
 
-    public Builder orderItemId(UUID val) {
+    public Builder setOrderItemId(UUID val) {
       orderItemId = val;
       return this;
     }
 
-    public Builder product(Product val) {
+    public Builder setOrderId(UUID val) {
+      orderId = val;
+      return this;
+    }
+
+    public Builder setProduct(Product val) {
       product = val;
       return this;
     }
 
-    public Builder quantity(Integer val) {
+    public Builder setQuantity(Integer val) {
       quantity = val;
       return this;
     }
 
-    public Builder price(BigDecimal val) {
+    public Builder setPrice(BigDecimal val) {
       price = val;
       return this;
     }
