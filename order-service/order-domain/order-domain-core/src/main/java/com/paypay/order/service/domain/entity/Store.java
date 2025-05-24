@@ -5,16 +5,16 @@ import java.util.UUID;
 
 public class Store {
 
-  private UUID storeId;
+  private UUID id;
   private List<Product> products;
 
   private Store(Builder builder) {
-    storeId = builder.storeId;
+    id = builder.storeId;
     products = builder.products;
   }
 
-  public UUID getStoreId() {
-    return storeId;
+  public UUID getId() {
+    return id;
   }
 
   public List<Product> getProducts() {

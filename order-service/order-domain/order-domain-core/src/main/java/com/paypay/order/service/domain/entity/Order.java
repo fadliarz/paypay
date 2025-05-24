@@ -5,29 +5,19 @@ import java.util.List;
 import java.util.UUID;
 
 public class Order {
-
+  private final UUID id;
   private final UUID customerId;
-  private final UUID orderId;
   private final UUID storeId;
   private final String deliveryAddress;
   private final List<OrderItem> orderItems;
   private final BigDecimal price;
 
-  private Order(Builder builder) {
-    customerId = builder.customerId;
-    orderId = builder.orderId;
-    storeId = builder.storeId;
-    deliveryAddress = builder.deliveryAddress;
-    orderItems = builder.orderItems;
-    price = builder.price;
+  public UUID getId() {
+    return id;
   }
 
   public UUID getCustomerId() {
     return customerId;
-  }
-
-  public UUID getOrderId() {
-    return orderId;
   }
 
   public UUID getStoreId() {
@@ -46,13 +36,22 @@ public class Order {
     return price;
   }
 
+  private Order(Builder builder) {
+    orderItems = builder.orderItems;
+    id = builder.id;
+    customerId = builder.customerId;
+    storeId = builder.storeId;
+    deliveryAddress = builder.deliveryAddress;
+    price = builder.price;
+  }
+
   public static final class Builder {
 
+    private List<OrderItem> orderItems;
+    private UUID id;
     private UUID customerId;
-    private UUID orderId;
     private UUID storeId;
     private String deliveryAddress;
-    private List<OrderItem> orderItems;
     private BigDecimal price;
 
     private Builder() {}
@@ -61,13 +60,18 @@ public class Order {
       return new Builder();
     }
 
-    public Builder setCustomerId(UUID val) {
-      customerId = val;
+    public Builder setOrderItems(List<OrderItem> val) {
+      orderItems = val;
       return this;
     }
 
-    public Builder setOrderId(UUID val) {
-      orderId = val;
+    public Builder setId(UUID val) {
+      id = val;
+      return this;
+    }
+
+    public Builder setCustomerId(UUID val) {
+      customerId = val;
       return this;
     }
 
@@ -78,11 +82,6 @@ public class Order {
 
     public Builder setDeliveryAddress(String val) {
       deliveryAddress = val;
-      return this;
-    }
-
-    public Builder setOrderItems(List<OrderItem> val) {
-      orderItems = val;
       return this;
     }
 

@@ -5,14 +5,14 @@ import java.util.UUID;
 
 public class Product {
 
-  private final UUID productId;
+  private final UUID id;
   private final String image;
   private final String name;
   private final String description;
   private final BigDecimal price;
 
-  public UUID getProductId() {
-    return productId;
+  public UUID getId() {
+    return id;
   }
 
   public String getImage() {
@@ -32,7 +32,7 @@ public class Product {
   }
 
   private Product(Builder builder) {
-    productId = builder.productId;
+    id = builder.productId;
     image = builder.image;
     name = builder.name;
     description = builder.description;
