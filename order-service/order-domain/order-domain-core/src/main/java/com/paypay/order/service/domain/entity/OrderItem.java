@@ -15,7 +15,11 @@ public class OrderItem {
     this.id = id;
   }
 
-  public void validateSubTotalPrice() {
+  public void validateOrderItem() {
+    this.validateSubTotalPrice();
+  }
+
+  private void validateSubTotalPrice() {
     if (!subTotalPrice.equals(product.getPrice().multiply(BigDecimal.valueOf(quantity))))
       throw new RuntimeException();
   }
