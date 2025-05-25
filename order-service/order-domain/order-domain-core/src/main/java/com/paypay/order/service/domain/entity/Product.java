@@ -11,6 +11,21 @@ public class Product {
   private final String description;
   private final BigDecimal price;
 
+  public boolean matches(Product product) {
+    return (this.image.equals(product.getImage())
+        && this.name.equals(product.getName())
+        && this.description.equals(product.getDescription())
+        && this.price.equals(product.getPrice()));
+  }
+
+  private Product(Builder builder) {
+    id = builder.id;
+    image = builder.image;
+    name = builder.name;
+    description = builder.description;
+    price = builder.price;
+  }
+
   public UUID getId() {
     return id;
   }
@@ -31,17 +46,9 @@ public class Product {
     return price;
   }
 
-  private Product(Builder builder) {
-    id = builder.productId;
-    image = builder.image;
-    name = builder.name;
-    description = builder.description;
-    price = builder.price;
-  }
-
   public static final class Builder {
 
-    private UUID productId;
+    private UUID id;
     private String image;
     private String name;
     private String description;
@@ -53,8 +60,8 @@ public class Product {
       return new Builder();
     }
 
-    public Builder setProductId(UUID val) {
-      productId = val;
+    public Builder setId(UUID val) {
+      id = val;
       return this;
     }
 
