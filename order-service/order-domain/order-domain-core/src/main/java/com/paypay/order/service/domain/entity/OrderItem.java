@@ -5,11 +5,15 @@ import java.util.UUID;
 
 public class OrderItem {
 
-  private final Long id;
+  private Long id;
   private final UUID orderId;
   private final Product product;
   private final Integer quantity;
   private final BigDecimal subTotalPrice;
+
+  public void initializeOrderItem(Long id) {
+    this.id = id;
+  }
 
   public Long getId() {
     return id;
