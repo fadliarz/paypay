@@ -5,13 +5,13 @@ import java.util.UUID;
 
 public class OrderItem {
 
-  private final UUID id;
+  private final Long id;
   private final UUID orderId;
   private final Product product;
   private final Integer quantity;
   private final BigDecimal subTotalPrice;
 
-  public UUID getId() {
+  public Long getId() {
     return id;
   }
 
@@ -41,7 +41,7 @@ public class OrderItem {
 
   public static final class Builder {
 
-    private UUID id;
+    private Long id;
     private UUID orderId;
     private Product product;
     private Integer quantity;
@@ -53,7 +53,7 @@ public class OrderItem {
       return new Builder();
     }
 
-    public Builder setId(UUID val) {
+    public Builder setId(Long val) {
       id = val;
       return this;
     }
