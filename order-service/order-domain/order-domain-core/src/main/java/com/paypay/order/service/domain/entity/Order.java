@@ -5,12 +5,40 @@ import java.util.List;
 import java.util.UUID;
 
 public class Order {
-  private final UUID id;
+  private UUID id;
   private final UUID customerId;
   private final UUID storeId;
   private final String deliveryAddress;
   private final List<OrderItem> orderItems;
   private final BigDecimal price;
+
+  public void initializeOrder() {
+    this.id = UUID.randomUUID();
+    initializeOrderItems();
+  }
+
+  public void validateOrder() {
+    validateOrderItems();
+  }
+
+  private void initializeOrderItems() {
+    long id = 1;
+    for (OrderItem orderItem : orderItems) {
+      orderItem.initializeOrderItem(id++);
+    }
+  }
+
+  private void validateOrderItems() {
+    BigDecimal totalPrice =
+        orderItems.stream()
+            .map(
+                (orderItem) -> {
+                  orderItem.validateOrderItem();
+                  return orderItem.getSubTotalPrice();
+                })
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    if (!price.equals(totalPrice)) throw new RuntimeException();
+  }
 
   public UUID getId() {
     return id;
