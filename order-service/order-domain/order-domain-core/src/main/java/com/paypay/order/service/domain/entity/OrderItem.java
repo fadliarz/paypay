@@ -8,11 +8,16 @@ public class OrderItem {
   private Long id;
   private final UUID orderId;
   private final Product product;
-  private final Integer quantity;
+  private final int quantity;
   private final BigDecimal subTotalPrice;
 
   public void initializeOrderItem(Long id) {
     this.id = id;
+  }
+
+  public void validateSubTotalPrice() {
+    if (!subTotalPrice.equals(product.getPrice().multiply(BigDecimal.valueOf(quantity))))
+      throw new RuntimeException();
   }
 
   public Long getId() {
@@ -27,7 +32,7 @@ public class OrderItem {
     return product;
   }
 
-  public Integer getQuantity() {
+  public int getQuantity() {
     return quantity;
   }
 
@@ -48,7 +53,7 @@ public class OrderItem {
     private Long id;
     private UUID orderId;
     private Product product;
-    private Integer quantity;
+    private int quantity;
     private BigDecimal price;
 
     private Builder() {}
@@ -72,7 +77,7 @@ public class OrderItem {
       return this;
     }
 
-    public Builder setQuantity(Integer val) {
+    public Builder setQuantity(int val) {
       quantity = val;
       return this;
     }
