@@ -1,5 +1,6 @@
 package com.paypay.order.service.domain.entity;
 
+import com.paypay.domain.valueobject.OrderStatus;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,17 @@ public class Order {
   private final String deliveryAddress;
   private final List<OrderItem> items;
   private final BigDecimal totalPrice;
+  private final OrderStatus orderStatus;
+
+  private Order(Builder builder) {
+    id = builder.id;
+    customerId = builder.customerId;
+    storeId = builder.storeId;
+    deliveryAddress = builder.deliveryAddress;
+    items = builder.items;
+    totalPrice = builder.totalPrice;
+    orderStatus = builder.orderStatus;
+  }
 
   public void initializeOrder() {
     this.id = UUID.randomUUID();
@@ -64,33 +76,24 @@ public class Order {
     return totalPrice;
   }
 
-  private Order(Builder builder) {
-    items = builder.items;
-    id = builder.id;
-    customerId = builder.customerId;
-    storeId = builder.storeId;
-    deliveryAddress = builder.deliveryAddress;
-    totalPrice = builder.totalPrice;
+  public OrderStatus getOrderStatus() {
+    return orderStatus;
   }
 
   public static final class Builder {
 
-    private List<OrderItem> items;
     private UUID id;
     private UUID customerId;
     private UUID storeId;
     private String deliveryAddress;
+    private List<OrderItem> items;
     private BigDecimal totalPrice;
+    private OrderStatus orderStatus;
 
     private Builder() {}
 
     public static Builder builder() {
       return new Builder();
-    }
-
-    public Builder setItems(List<OrderItem> val) {
-      items = val;
-      return this;
     }
 
     public Builder setId(UUID val) {
@@ -113,8 +116,18 @@ public class Order {
       return this;
     }
 
+    public Builder setItems(List<OrderItem> val) {
+      items = val;
+      return this;
+    }
+
     public Builder setTotalPrice(BigDecimal val) {
       totalPrice = val;
+      return this;
+    }
+
+    public Builder setOrderStatus(OrderStatus val) {
+      orderStatus = val;
       return this;
     }
 
