@@ -9,8 +9,8 @@ public class Order {
   private final UUID customerId;
   private final UUID storeId;
   private final String deliveryAddress;
-  private final List<OrderItem> orderItems;
-  private final BigDecimal price;
+  private final List<OrderItem> items;
+  private final BigDecimal totalPrice;
 
   public void initializeOrder() {
     this.id = UUID.randomUUID();
@@ -23,21 +23,21 @@ public class Order {
 
   private void initializeOrderItems() {
     long id = 1;
-    for (OrderItem orderItem : orderItems) {
+    for (OrderItem orderItem : items) {
       orderItem.initializeOrderItem(id++);
     }
   }
 
   private void validateOrderItems() {
     BigDecimal totalPrice =
-        orderItems.stream()
+        items.stream()
             .map(
                 (orderItem) -> {
                   orderItem.validateOrderItem();
                   return orderItem.getSubTotalPrice();
                 })
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-    if (!price.equals(totalPrice)) throw new RuntimeException();
+    if (!this.totalPrice.equals(totalPrice)) throw new RuntimeException();
   }
 
   public UUID getId() {
@@ -56,31 +56,31 @@ public class Order {
     return deliveryAddress;
   }
 
-  public List<OrderItem> getOrderItems() {
-    return orderItems;
+  public List<OrderItem> getItems() {
+    return items;
   }
 
-  public BigDecimal getPrice() {
-    return price;
+  public BigDecimal getTotalPrice() {
+    return totalPrice;
   }
 
   private Order(Builder builder) {
-    orderItems = builder.orderItems;
+    items = builder.items;
     id = builder.id;
     customerId = builder.customerId;
     storeId = builder.storeId;
     deliveryAddress = builder.deliveryAddress;
-    price = builder.price;
+    totalPrice = builder.totalPrice;
   }
 
   public static final class Builder {
 
-    private List<OrderItem> orderItems;
+    private List<OrderItem> items;
     private UUID id;
     private UUID customerId;
     private UUID storeId;
     private String deliveryAddress;
-    private BigDecimal price;
+    private BigDecimal totalPrice;
 
     private Builder() {}
 
@@ -88,8 +88,8 @@ public class Order {
       return new Builder();
     }
 
-    public Builder setOrderItems(List<OrderItem> val) {
-      orderItems = val;
+    public Builder setItems(List<OrderItem> val) {
+      items = val;
       return this;
     }
 
@@ -113,8 +113,8 @@ public class Order {
       return this;
     }
 
-    public Builder setPrice(BigDecimal val) {
-      price = val;
+    public Builder setTotalPrice(BigDecimal val) {
+      totalPrice = val;
       return this;
     }
 
