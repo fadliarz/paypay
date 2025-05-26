@@ -49,7 +49,7 @@ public class OrderItem {
     orderId = builder.orderId;
     product = builder.product;
     quantity = builder.quantity;
-    subTotalPrice = builder.price;
+    subTotalPrice = builder.subTotalPrice;
   }
 
   public static final class Builder {
@@ -58,7 +58,7 @@ public class OrderItem {
     private UUID orderId;
     private Product product;
     private int quantity;
-    private BigDecimal price;
+    private BigDecimal subTotalPrice;
 
     private Builder() {}
 
@@ -86,8 +86,8 @@ public class OrderItem {
       return this;
     }
 
-    public Builder setPrice(BigDecimal val) {
-      price = val;
+    public Builder setSubTotalPrice(BigDecimal val) {
+      subTotalPrice = val;
       return this;
     }
 
