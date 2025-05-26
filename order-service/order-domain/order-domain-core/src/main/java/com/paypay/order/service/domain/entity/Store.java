@@ -9,7 +9,7 @@ public class Store {
   private List<Product> products;
 
   private Store(Builder builder) {
-    id = builder.storeId;
+    id = builder.id;
     products = builder.products;
   }
 
@@ -23,7 +23,7 @@ public class Store {
 
   public static final class Builder {
 
-    private UUID storeId;
+    private UUID id;
     private List<Product> products;
 
     private Builder() {}
@@ -32,12 +32,12 @@ public class Store {
       return new Builder();
     }
 
-    public Builder storeId(UUID val) {
-      storeId = val;
+    public Builder setId(UUID val) {
+      id = val;
       return this;
     }
 
-    public Builder products(List<Product> val) {
+    public Builder setProducts(List<Product> val) {
       products = val;
       return this;
     }
