@@ -13,6 +13,8 @@ public class OrderDomainServiceImpl implements OrderDomainService {
   @Override
   public OrderCreatedEvent validateAndInitiateOrder(Order order, Store store) {
     validateOrderProducts(order, store);
+    order.validateOrder();
+    order.initializeOrder();
     return new OrderCreatedEvent(order, ZonedDateTime.now());
   }
 
@@ -20,7 +22,7 @@ public class OrderDomainServiceImpl implements OrderDomainService {
     HashMap<UUID, Product> storeProductHashMap = new HashMap<>();
     store.getProducts().forEach((product) -> storeProductHashMap.put(product.getId(), product));
     order
-        .getOrderItems()
+        .getItems()
         .forEach(
             (orderItem -> {
               Product orderItemProduct = orderItem.getProduct();
