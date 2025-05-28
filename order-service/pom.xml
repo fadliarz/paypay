@@ -13,7 +13,9 @@
   <packaging>pom</packaging>
   <modules>
     <module>order-domain</module>
-    <module>order-data-access</module>
+    <module>order-dataaccess</module>
+    <module>order-container</module>
+    <module>order-client</module>
   </modules>
 
   <properties>

@@ -19,12 +19,14 @@
     <module>product-service</module>
     <module>order-service</module>
     <module>common</module>
+    <module>infrastructure</module>
   </modules>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring-cloud.version>2024.0.0</spring-cloud.version>
   </properties>
 
   <dependencyManagement>
@@ -41,14 +43,14 @@
       </dependency>
       <dependency>
         <groupId>com.paypay</groupId>
-        <artifactId>common-data-access</artifactId>
+        <artifactId>common-dataaccess</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>com.paypay</groupId>
         <artifactId>product-service</artifactId>
-        <version>$[project.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
@@ -76,7 +78,16 @@
         <artifactId>order-container</artifactId>
         <version>${project.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>order-dataaccess</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>order-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -92,5 +103,6 @@
       <version>3.4.0</version>
     </dependency>
   </dependencies>
+
 
 </project>
