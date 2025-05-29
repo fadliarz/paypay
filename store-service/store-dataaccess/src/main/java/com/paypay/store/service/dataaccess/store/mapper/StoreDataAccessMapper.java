@@ -12,7 +12,7 @@ public class StoreDataAccessMapper {
   public Store materializedStoreAndProductEntitiesToStore(
       List<MaterializedStoreAndProductEntity> materializedStoreAndProductEntities) {
     Store.Builder storeBuilder = Store.Builder.builder();
-    storeBuilder.setId(materializedStoreAndProductEntities.getFirst().getStoreId());
+    storeBuilder.setId(materializedStoreAndProductEntities.get(0).getStoreId());
     storeBuilder.setProducts(
         materializedStoreAndProductEntities.stream()
             .map(this::materializedStoreAndProductEntityToProduct)
