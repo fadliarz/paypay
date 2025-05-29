@@ -13,10 +13,11 @@ import com.paypay.order.service.domain.exception.CustomerNotFoundException;
 import com.paypay.order.service.domain.exception.StoreNotFoundException;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
 import com.paypay.order.service.domain.mapper.OrderDataMapper;
+import com.paypay.order.service.domain.ports.output.client.StoreClient;
 import com.paypay.order.service.domain.ports.output.repository.CustomerRepository;
 import com.paypay.order.service.domain.ports.output.repository.OrderRepository;
-import com.paypay.order.service.domain.ports.output.repository.StoreRepository;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class CreateOrderHelperTest {
   @Mock private OrderDataMapper orderDataMapper;
-  @Mock private StoreRepository storeRepository;
+  @Mock private StoreClient storeClient;
   @Mock private OrderRepository orderRepository;
   @Mock private OrderDomainService orderDomainService;
   @Mock private CustomerRepository customerRepository;
@@ -41,6 +42,7 @@ public class CreateOrderHelperTest {
   private CreateOrderCommand mockedCreateOrderCommand;
   private Customer mockedCustomer;
   private Store mockedStore;
+  private List<UUID> mockedProductIds;
   private Order mockedOrder;
   private OrderCreatedEvent mockedOrderCreatedEvent;
 
@@ -57,8 +59,9 @@ public class CreateOrderHelperTest {
     lenient()
         .when(orderDataMapper.createOrderCommandToStore(mockedCreateOrderCommand))
         .thenReturn(mockedStore);
+    lenient().when(orderDataMapper.storeToProductIds(mockedStore)).thenReturn(mockedProductIds);
     lenient()
-        .when(storeRepository.findStoreInformation(mockedStore))
+        .when(storeClient.findStoreInformationWithProducts(mockedStore.getId(), mockedProductIds))
         .thenReturn(Optional.ofNullable(mockedStore));
     lenient()
         .when(orderDataMapper.createOrderCommandToOrder(mockedCreateOrderCommand))
@@ -88,7 +91,8 @@ public class CreateOrderHelperTest {
 
   @Test
   void PersistOrder_StoreNotFound_ThrowsStoreNotFoundException() {
-    when(storeRepository.findStoreInformation(mockedStore)).thenReturn(Optional.empty());
+    when(storeClient.findStoreInformationWithProducts(mockedStore.getId(), mockedProductIds))
+        .thenReturn(Optional.empty());
 
     assertThrows(
         StoreNotFoundException.class,
