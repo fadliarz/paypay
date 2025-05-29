@@ -14,6 +14,7 @@
   <modules>
     <module>store-domain</module>
     <module>store-dataaccess</module>
+      <module>store-container</module>
   </modules>
 
   <properties>
