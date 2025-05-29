@@ -9,7 +9,7 @@ import com.paypay.order.service.domain.exception.CustomerNotFoundException;
 import com.paypay.order.service.domain.exception.StoreNotFoundException;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
 import com.paypay.order.service.domain.mapper.OrderDataMapper;
-import com.paypay.order.service.domain.ports.output.client.CustomerClient;
+import com.paypay.order.service.domain.ports.output.repository.CustomerRepository;
 import com.paypay.order.service.domain.ports.output.repository.OrderRepository;
 import com.paypay.order.service.domain.ports.output.repository.StoreRepository;
 import java.util.Optional;
@@ -25,19 +25,19 @@ public class CreateOrderHelper {
   private final StoreRepository storeRepository;
   private final OrderRepository orderRepository;
   private final OrderDomainService orderDomainService;
-  private final CustomerClient customerClient;
+  private final CustomerRepository customerRepository;
 
   public CreateOrderHelper(
       OrderDataMapper orderDataMapper,
       StoreRepository storeRepository,
       OrderRepository orderRepository,
       OrderDomainService orderDomainService,
-      CustomerClient customerClient) {
+      CustomerRepository customerRepository) {
     this.orderDataMapper = orderDataMapper;
     this.storeRepository = storeRepository;
     this.orderRepository = orderRepository;
     this.orderDomainService = orderDomainService;
-    this.customerClient = customerClient;
+    this.customerRepository = customerRepository;
   }
 
   public OrderCreatedEvent persistOrder(CreateOrderCommand createOrderCommand) {
@@ -50,7 +50,7 @@ public class CreateOrderHelper {
   }
 
   private void checkCustomer(UUID customerId) {
-    Optional<Customer> customer = customerClient.findCustomer(customerId);
+    Optional<Customer> customer = customerRepository.findCustomer(customerId);
     if (customer.isEmpty()) throw new CustomerNotFoundException();
   }
 
