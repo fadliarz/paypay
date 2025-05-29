@@ -10,7 +10,6 @@ import com.paypay.order.service.domain.exception.StoreNotFoundException;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
 import com.paypay.order.service.domain.mapper.OrderDataMapper;
 import com.paypay.order.service.domain.ports.output.client.CustomerClient;
-import com.paypay.order.service.domain.ports.output.repository.CustomerRepository;
 import com.paypay.order.service.domain.ports.output.repository.OrderRepository;
 import com.paypay.order.service.domain.ports.output.repository.StoreRepository;
 import java.util.Optional;
@@ -30,7 +29,6 @@ public class CreateOrderHelper {
 
   public CreateOrderHelper(
       OrderDataMapper orderDataMapper,
-      CustomerRepository customerRepository,
       StoreRepository storeRepository,
       OrderRepository orderRepository,
       OrderDomainService orderDomainService,
