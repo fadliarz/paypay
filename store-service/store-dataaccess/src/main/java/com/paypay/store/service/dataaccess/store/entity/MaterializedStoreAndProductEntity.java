@@ -29,4 +29,18 @@ public class MaterializedStoreAndProductEntity {
   private String productName;
   private String productDescription;
   private BigDecimal productPrice;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    MaterializedStoreAndProductEntity that = (MaterializedStoreAndProductEntity) o;
+    return Objects.equals(storeId, that.storeId) && Objects.equals(productId, that.productId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        storeId, productId, productImage, productName, productDescription, productPrice);
+  }
 }
