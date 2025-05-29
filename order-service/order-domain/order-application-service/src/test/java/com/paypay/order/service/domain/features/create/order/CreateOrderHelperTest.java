@@ -13,7 +13,7 @@ import com.paypay.order.service.domain.exception.CustomerNotFoundException;
 import com.paypay.order.service.domain.exception.StoreNotFoundException;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
 import com.paypay.order.service.domain.mapper.OrderDataMapper;
-import com.paypay.order.service.domain.ports.output.client.CustomerClient;
+import com.paypay.order.service.domain.ports.output.repository.CustomerRepository;
 import com.paypay.order.service.domain.ports.output.repository.OrderRepository;
 import com.paypay.order.service.domain.ports.output.repository.StoreRepository;
 import java.time.ZonedDateTime;
@@ -29,10 +29,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class CreateOrderHelperTest {
   @Mock private OrderDataMapper orderDataMapper;
-  @Mock private CustomerClient customerClient;
   @Mock private StoreRepository storeRepository;
   @Mock private OrderRepository orderRepository;
   @Mock private OrderDomainService orderDomainService;
+  @Mock private CustomerRepository customerRepository;
   @InjectMocks private CreateOrderHelper createOrderHelper;
 
   private static final UUID CUSTOMER_ID = UUID.randomUUID();
@@ -52,7 +52,8 @@ public class CreateOrderHelperTest {
     mockedOrderCreatedEvent = new OrderCreatedEvent(mockedOrder, ZonedDateTime.now());
     mockedStore = Store.Builder.builder().build();
     mockedOrder = Order.Builder.builder().build();
-    when(customerClient.findCustomer(CUSTOMER_ID)).thenReturn(Optional.ofNullable(mockedCustomer));
+    when(customerRepository.findCustomer(CUSTOMER_ID))
+        .thenReturn(Optional.ofNullable(mockedCustomer));
     lenient()
         .when(orderDataMapper.createOrderCommandToStore(mockedCreateOrderCommand))
         .thenReturn(mockedStore);
@@ -78,7 +79,7 @@ public class CreateOrderHelperTest {
 
   @Test
   void PersistOrder_CustomerNotFound_ThrowCustomerNotFoundException() {
-    when(customerClient.findCustomer(CUSTOMER_ID)).thenReturn(Optional.empty());
+    when(customerRepository.findCustomer(CUSTOMER_ID)).thenReturn(Optional.empty());
 
     assertThrows(
         CustomerNotFoundException.class,
