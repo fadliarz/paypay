@@ -20,6 +20,7 @@
     <module>order-service</module>
     <module>common</module>
     <module>infrastructure</module>
+    <module>store-service</module>
   </modules>
 
   <properties>
@@ -86,6 +87,28 @@
       <dependency>
         <groupId>com.paypay</groupId>
         <artifactId>order-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>store-service</artifactId>
+        <version>${project.version}</version>
+
+      </dependency>
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>store-domain</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>store-domain-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>store-application-service</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
