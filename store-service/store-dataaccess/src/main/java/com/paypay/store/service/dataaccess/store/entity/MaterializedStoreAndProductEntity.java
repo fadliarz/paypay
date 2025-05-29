@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "store_product_m_view")
+@Table(name = "store_product_m_view", schema = "store")
 @IdClass(MaterializedStoreAndProductIdEntity.class)
 public class MaterializedStoreAndProductEntity {
 
