@@ -4,6 +4,7 @@ import com.paypay.order.service.client.store.feign.StoreFeignClient;
 import com.paypay.order.service.client.store.mapper.StoreClientDataMapper;
 import com.paypay.order.service.domain.entity.Store;
 import com.paypay.order.service.domain.ports.output.client.StoreClient;
+import feign.FeignException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,8 +24,12 @@ public class StoreClientImpl implements StoreClient {
 
   @Override
   public Optional<Store> findStoreInformationWithProducts(UUID storeId, List<UUID> productIds) {
-    return storeFeignClient
-        .findStoreInformationWithProducts(storeId, productIds)
-        .map(storeClientDataMapper::storeDetailsToStore);
+    try {
+      return storeFeignClient
+          .findStoreInformationWithProducts(storeId, productIds)
+          .map(storeClientDataMapper::storeDetailsToStore);
+    } catch (FeignException.NotFound notFound) {
+      return Optional.empty();
+    }
   }
 }
