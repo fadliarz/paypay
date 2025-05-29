@@ -1,10 +1,12 @@
+CREATE SCHEMA IF NOT EXISTS "order";
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 DROP TYPE IF EXISTS order_status;
 CREATE TYPE order_status AS ENUM ('PENDING', 'PAID', 'APPROVED', 'CANCELLING', 'CANCELLED');
 
-DROP TABLE IF EXISTS orders;
-CREATE TABLE orders
+DROP TABLE IF EXISTS "order".orders;
+CREATE TABLE "order".orders
 (
   id               uuid                                           NOT NULL,
   customer_ud      uuid                                           NOT NULL,
@@ -14,8 +16,8 @@ CREATE TABLE orders
   CONSTRAINT orders_pkey PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS order_items;
-CREATE TABLE order_items
+DROP TABLE IF EXISTS "order".order_items;
+CREATE TABLE "order".order_items
 (
   id              bigint                                         NOT NULL,
   order_id        uuid                                           NOT NULL,
@@ -28,12 +30,11 @@ CREATE TABLE order_items
   CONSTRAINT order_items_pkey PRIMARY KEY (id, order_id)
 );
 
-DROP TABLE IF EXISTS customers;
-CREATE TABLE customers
+DROP TABLE IF EXISTS "order".customers;
+CREATE TABLE "order".customers
 (
   id         uuid                                           NOT NULL,
   username   character varying COLLATE pg_catalog."default" NOT NULL,
   first_name character varying COLLATE pg_catalog."default" NOT NULL,
-  last_name  character varying COLLATE pg_catalog."default" NOT NULL,
-  CONSTRAINT customers_pkey PRIMARY KEY (id)
-);
+  last_name  character varying COLLATE pg_catalog."default" NOT NULL
+)
