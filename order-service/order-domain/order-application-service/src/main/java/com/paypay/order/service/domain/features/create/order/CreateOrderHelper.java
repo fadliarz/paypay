@@ -9,6 +9,7 @@ import com.paypay.order.service.domain.exception.CustomerNotFoundException;
 import com.paypay.order.service.domain.exception.StoreNotFoundException;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
 import com.paypay.order.service.domain.mapper.OrderDataMapper;
+import com.paypay.order.service.domain.ports.output.client.CustomerClient;
 import com.paypay.order.service.domain.ports.output.repository.CustomerRepository;
 import com.paypay.order.service.domain.ports.output.repository.OrderRepository;
 import com.paypay.order.service.domain.ports.output.repository.StoreRepository;
@@ -22,22 +23,23 @@ import org.springframework.stereotype.Component;
 public class CreateOrderHelper {
 
   private final OrderDataMapper orderDataMapper;
-  private final CustomerRepository customerRepository;
   private final StoreRepository storeRepository;
   private final OrderRepository orderRepository;
   private final OrderDomainService orderDomainService;
+  private final CustomerClient customerClient;
 
   public CreateOrderHelper(
       OrderDataMapper orderDataMapper,
       CustomerRepository customerRepository,
       StoreRepository storeRepository,
       OrderRepository orderRepository,
-      OrderDomainService orderDomainService) {
+      OrderDomainService orderDomainService,
+      CustomerClient customerClient) {
     this.orderDataMapper = orderDataMapper;
-    this.customerRepository = customerRepository;
     this.storeRepository = storeRepository;
     this.orderRepository = orderRepository;
     this.orderDomainService = orderDomainService;
+    this.customerClient = customerClient;
   }
 
   public OrderCreatedEvent persistOrder(CreateOrderCommand createOrderCommand) {
@@ -50,7 +52,7 @@ public class CreateOrderHelper {
   }
 
   private void checkCustomer(UUID customerId) {
-    Optional<Customer> customer = customerRepository.findCustomer(customerId);
+    Optional<Customer> customer = customerClient.findCustomer(customerId);
     if (customer.isEmpty()) throw new CustomerNotFoundException();
   }
 
