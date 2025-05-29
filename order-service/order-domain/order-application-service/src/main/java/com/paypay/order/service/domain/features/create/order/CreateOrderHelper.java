@@ -9,9 +9,9 @@ import com.paypay.order.service.domain.exception.CustomerNotFoundException;
 import com.paypay.order.service.domain.exception.StoreNotFoundException;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
 import com.paypay.order.service.domain.mapper.OrderDataMapper;
+import com.paypay.order.service.domain.ports.output.client.StoreClient;
 import com.paypay.order.service.domain.ports.output.repository.CustomerRepository;
 import com.paypay.order.service.domain.ports.output.repository.OrderRepository;
-import com.paypay.order.service.domain.ports.output.repository.StoreRepository;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -22,19 +22,19 @@ import org.springframework.stereotype.Component;
 public class CreateOrderHelper {
 
   private final OrderDataMapper orderDataMapper;
-  private final StoreRepository storeRepository;
+  private final StoreClient storeClient;
   private final OrderRepository orderRepository;
   private final OrderDomainService orderDomainService;
   private final CustomerRepository customerRepository;
 
   public CreateOrderHelper(
       OrderDataMapper orderDataMapper,
-      StoreRepository storeRepository,
+      StoreClient storeClient,
       OrderRepository orderRepository,
       OrderDomainService orderDomainService,
       CustomerRepository customerRepository) {
     this.orderDataMapper = orderDataMapper;
-    this.storeRepository = storeRepository;
+    this.storeClient = storeClient;
     this.orderRepository = orderRepository;
     this.orderDomainService = orderDomainService;
     this.customerRepository = customerRepository;
@@ -56,7 +56,9 @@ public class CreateOrderHelper {
 
   private Store checkStore(CreateOrderCommand createOrderCommand) {
     Store store = orderDataMapper.createOrderCommandToStore(createOrderCommand);
-    Optional<Store> optionalStore = storeRepository.findStoreInformation(store);
+    Optional<Store> optionalStore =
+        storeClient.findStoreInformationWithProducts(
+            store.getId(), orderDataMapper.storeToProductIds(store));
     if (optionalStore.isEmpty()) throw new StoreNotFoundException();
     return optionalStore.get();
   }

@@ -7,6 +7,8 @@ import com.paypay.order.service.domain.entity.Store;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
 import com.paypay.order.service.domain.features.create.order.dto.OrderItemDto;
 import com.paypay.order.service.domain.features.create.order.dto.ProductDto;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -51,5 +53,9 @@ public class OrderDataMapper {
         .setDescription(productDto.getDescription())
         .setPrice(productDto.getPrice())
         .build();
+  }
+
+  public List<UUID> storeToProductIds(Store store) {
+    return store.getProducts().stream().map(product -> product.getId()).toList();
   }
 }
