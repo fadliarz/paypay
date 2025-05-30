@@ -1,4 +1,4 @@
-package command;
+package com.paypay.order.service.domain.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

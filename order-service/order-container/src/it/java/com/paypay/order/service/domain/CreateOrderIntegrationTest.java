@@ -1,13 +1,13 @@
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+package com.paypay.order.service.domain;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.paypay.order.service.domain.OrderServiceApplication;
+import com.paypay.order.service.domain.command.CommandFactory;
 import com.paypay.order.service.domain.entity.Store;
 import com.paypay.order.service.domain.exception.CustomerNotFoundException;
 import com.paypay.order.service.domain.exception.StoreNotFoundException;
 import com.paypay.order.service.domain.features.create.order.CreateOrderCommandHandler;
 import com.paypay.order.service.domain.ports.output.client.StoreClient;
-import command.CommandFactory;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +41,9 @@ public class CreateOrderIntegrationTest extends AbstractOrderIntegrationTest {
   void placeOrder_whenStoreNotFound_throwStoreNotFoundException() {
     mockFindStoreWithProduct404NotFound();
 
+    assertNotNull(createOrderCommand);
     assertThrows(
-        StoreNotFoundException.class,
-        () -> createOrderCommandHandler.handle(CommandFactory.newCreateOrderCommand()));
+        StoreNotFoundException.class, () -> createOrderCommandHandler.handle(createOrderCommand));
   }
 
   @Test

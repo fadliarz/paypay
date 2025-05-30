@@ -1,3 +1,5 @@
+package com.paypay.order.service.domain;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -5,6 +7,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.paypay.order.service.client.store.entity.ProductDetails;
 import com.paypay.order.service.client.store.entity.StoreDetails;
+import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
+import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand.CreateOrderCommandBuilder;
+import com.paypay.order.service.domain.features.create.order.dto.OrderItemDto;
+import com.paypay.order.service.domain.mapper.OrderIntegrationTestDataMapper;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.math.BigDecimal;
@@ -20,6 +26,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -28,9 +35,11 @@ import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingExcept
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.utility.DockerImageName;
 
-@ExtendWith(TestcontainersExtension.class)
 @Slf4j
+@SpringBootTest(classes = {OrderServiceApplication.class})
+@ExtendWith(TestcontainersExtension.class)
 public class AbstractOrderIntegrationTest {
+
   protected static final PostgreSQLContainer<?> POSTGRE_SQL_CONTAINER;
   protected static final String ORDER_SCHEMA = "order";
 
@@ -38,6 +47,8 @@ public class AbstractOrderIntegrationTest {
   protected static WireMockServer wireMockServer;
   protected static DataSource dataSource;
 
+  protected static CreateOrderCommand createOrderCommand;
+  protected static UUID customerId;
   protected static UUID mockedStoreId;
   protected static StoreDetails mockedStoreDetails;
   protected static List<ProductDetails> mockedProducts;
@@ -95,6 +106,7 @@ public class AbstractOrderIntegrationTest {
 
   @BeforeAll
   public static void setupMockedObject() {
+    customerId = UUID.fromString("f87e1fad-0a7e-49f5-abcf-bfdad2fff7d2");
     mockedStoreId = UUID.randomUUID();
     mockedFirstProductDetails =
         ProductDetails.builder()
@@ -114,6 +126,19 @@ public class AbstractOrderIntegrationTest {
             .build();
     mockedProducts = List.of(mockedFirstProductDetails, mockedSecondProductDetails);
     mockedStoreDetails = StoreDetails.builder().id(mockedStoreId).products(mockedProducts).build();
+
+    CreateOrderCommandBuilder createOrderCommandBuilder = CreateOrderCommand.builder();
+    createOrderCommandBuilder.storeId(mockedStoreId);
+    createOrderCommandBuilder.customerId(customerId);
+    List<OrderItemDto> orderItemDtoList =
+        OrderIntegrationTestDataMapper.productDetailsListToOrderItemDtoList(mockedProducts);
+    createOrderCommandBuilder.items(orderItemDtoList);
+    createOrderCommandBuilder.totalPrice(
+        orderItemDtoList.stream()
+            .map(OrderItemDto::getSubTotalPrice)
+            .reduce(BigDecimal.ZERO, BigDecimal::add));
+    createOrderCommandBuilder.deliveryAddress("Bandung, West Java");
+    createOrderCommand = createOrderCommandBuilder.build();
   }
 
   @BeforeEach
