@@ -11,11 +11,12 @@ DROP TABLE IF EXISTS "order".orders;
 CREATE TABLE "order".orders
 (
   id uuid NOT NULL,
-  customer_ud uuid NOT NULL,
+  customer_id uuid NOT NULL,
   store_id uuid NOT NULL,
   delivery_address character varying COLLATE pg_catalog."default" NOT NULL,
   total_price numeric(10,2) NOT NULL,
-  CONSTRAINT orders_pkey PRIMARY KEY (id)
+  order_status     order_status                                   NOT NULL,
+ CONSTRAINT orders_pkey PRIMARY KEY (id)
 );
 
 DROP TABLE IF EXISTS "order".order_items;
@@ -27,6 +28,7 @@ CREATE TABLE "order".order_items
   image character varying COLLATE pg_catalog."default" NOT NULL,
   name character varying COLLATE pg_catalog."default" NOT NULL,
   description character varying COLLATE pg_catalog."default" NOT NULL,
+  price numeric(10, 2) NOT NULL,
   quantity integer NOT NULL,
   sub_total_price numeric(10, 2) NOT NULL,
   CONSTRAINT order_items_pkey PRIMARY KEY (id, order_id)
