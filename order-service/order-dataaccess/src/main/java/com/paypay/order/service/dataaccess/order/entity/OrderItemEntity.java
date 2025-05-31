@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "order_items")
+@Table(schema = "order", name = "order_items")
 @IdClass(OrderItemIdEntity.class)
 public class OrderItemEntity {
 
