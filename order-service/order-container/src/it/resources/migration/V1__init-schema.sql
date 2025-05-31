@@ -32,6 +32,14 @@ CREATE TABLE "order".order_items
   CONSTRAINT order_items_pkey PRIMARY KEY (id, order_id)
 );
 
+
+ALTER TABLE "order".order_items
+  ADD CONSTRAINT "FK_ORDER_ID" FOREIGN KEY (order_id)
+    REFERENCES "order".orders (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    NOT VALID;
+
 DROP TABLE IF EXISTS "order".customers;
 CREATE TABLE "order".customers
 (
