@@ -3,6 +3,7 @@ package com.paypay.order.service.domain.entity;
 import com.paypay.domain.valueobject.OrderStatus;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Order {
@@ -51,6 +52,20 @@ public class Order {
                 })
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     if (!this.totalPrice.equals(totalPrice)) throw new RuntimeException();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Order order = (Order) o;
+    return Objects.equals(id, order.id)
+        && Objects.equals(customerId, order.customerId)
+        && Objects.equals(storeId, order.storeId)
+        && Objects.equals(deliveryAddress, order.deliveryAddress)
+        && Objects.equals(items, order.items)
+        && Objects.equals(totalPrice, order.totalPrice)
+        && orderStatus == order.orderStatus;
   }
 
   public UUID getId() {
