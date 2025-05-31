@@ -1,6 +1,7 @@
 package com.paypay.order.service.domain.entity;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Product {
@@ -16,6 +17,18 @@ public class Product {
         && this.name.equals(product.getName())
         && this.description.equals(product.getDescription())
         && this.price.equals(product.getPrice()));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Product product = (Product) o;
+    return Objects.equals(id, product.id)
+        && Objects.equals(image, product.image)
+        && Objects.equals(name, product.name)
+        && Objects.equals(description, product.description)
+        && Objects.equals(price, product.price);
   }
 
   private Product(Builder builder) {
