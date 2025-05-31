@@ -38,7 +38,4 @@ public class OrderEntity {
 
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
-
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-  private List<OrderItemEntity> items;
 }
