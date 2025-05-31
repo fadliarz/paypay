@@ -29,6 +29,11 @@ public class OrderEntity {
   @Id private UUID id;
   private UUID customerId;
   private UUID storeId;
+  private String deliveryAddress;
+
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+  private List<OrderItemEntity> items;
+
   private BigDecimal totalPrice;
 
   @Enumerated(EnumType.STRING)
