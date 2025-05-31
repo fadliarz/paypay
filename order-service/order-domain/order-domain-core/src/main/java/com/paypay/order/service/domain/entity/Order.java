@@ -12,7 +12,7 @@ public class Order {
   private final String deliveryAddress;
   private final List<OrderItem> items;
   private final BigDecimal totalPrice;
-  private final OrderStatus orderStatus;
+  private OrderStatus orderStatus;
 
   private Order(Builder builder) {
     id = builder.id;
