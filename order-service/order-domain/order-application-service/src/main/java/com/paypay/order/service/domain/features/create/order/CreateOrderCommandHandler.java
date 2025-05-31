@@ -13,7 +13,8 @@ public class CreateOrderCommandHandler {
     this.createOrderHelper = createOrderHelper;
   }
 
-  public void handle(CreateOrderCommand createOrderCommand) {
+  public OrderCreatedEvent handle(CreateOrderCommand createOrderCommand) {
     OrderCreatedEvent orderCreatedEvent = createOrderHelper.persistOrder(createOrderCommand);
+    return orderCreatedEvent;
   }
 }
