@@ -8,7 +8,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.paypay.order.service.client.store.entity.ProductDetails;
 import com.paypay.order.service.client.store.entity.StoreDetails;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
-import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand.CreateOrderCommandBuilder;
 import com.paypay.order.service.domain.features.create.order.dto.OrderItemDto;
 import com.paypay.order.service.domain.mapper.OrderIntegrationTestDataMapper;
 import com.zaxxer.hikari.HikariConfig;
@@ -23,10 +22,12 @@ import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -36,7 +37,11 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.utility.DockerImageName;
 
 @Slf4j
-@SpringBootTest(classes = {OrderServiceApplication.class})
+@SpringBootTest(
+    classes = {
+      OrderServiceApplication.class,
+      AbstractOrderIntegrationTest.DataSourceTestConfiguration.class,
+    })
 @ExtendWith(TestcontainersExtension.class)
 public class AbstractOrderIntegrationTest {
 
@@ -45,15 +50,24 @@ public class AbstractOrderIntegrationTest {
 
   protected static final ObjectMapper objectMapper = new ObjectMapper();
   protected static WireMockServer wireMockServer;
-  protected static DataSource dataSource;
+  @Autowired protected static DataSource dataSource;
 
   protected static CreateOrderCommand createOrderCommand;
+  protected static CreateOrderCommand.CreateOrderCommandBuilder createOrderCommandBuilder;
   protected static UUID customerId;
   protected static UUID mockedStoreId;
   protected static StoreDetails mockedStoreDetails;
   protected static List<ProductDetails> mockedProducts;
   protected static ProductDetails mockedFirstProductDetails;
   protected static ProductDetails mockedSecondProductDetails;
+
+  static class DataSourceTestConfiguration {
+    @Bean
+    @Primary
+    public DataSource springManagedDataSource() {
+      return AbstractOrderIntegrationTest.dataSource;
+    }
+  }
 
   static {
     wireMockServer = new WireMockServer(9121);
@@ -75,6 +89,8 @@ public class AbstractOrderIntegrationTest {
     HikariConfig hikariConfig = new HikariConfig();
     hikariConfig.setJdbcUrl(POSTGRE_SQL_CONTAINER.getJdbcUrl());
     hikariConfig.addDataSourceProperty("currentSchema", ORDER_SCHEMA);
+    hikariConfig.addDataSourceProperty("binaryTransfer", true);
+    hikariConfig.addDataSourceProperty("stringtype", "unspecified");
     hikariConfig.setUsername(POSTGRE_SQL_CONTAINER.getUsername());
     hikariConfig.setPassword(POSTGRE_SQL_CONTAINER.getPassword());
     hikariConfig.setDriverClassName(POSTGRE_SQL_CONTAINER.getDriverClassName());
@@ -97,15 +113,20 @@ public class AbstractOrderIntegrationTest {
   @DynamicPropertySource
   protected static void registerPgProperties(DynamicPropertyRegistry dynamicPropertyRegistry) {
     log.info("Registering postgres properties...");
-    dynamicPropertyRegistry.add("spring.datasource.url", POSTGRE_SQL_CONTAINER::getJdbcUrl);
+    dynamicPropertyRegistry.add(
+        "spring.datasource.url",
+        () ->
+            String.format(
+                "%s/?currentSchema=%s&stringtype=unspecified",
+                POSTGRE_SQL_CONTAINER.getJdbcUrl(), ORDER_SCHEMA));
     dynamicPropertyRegistry.add("spring.datasource.username", POSTGRE_SQL_CONTAINER::getUsername);
     dynamicPropertyRegistry.add("spring.datasource.password", POSTGRE_SQL_CONTAINER::getPassword);
     dynamicPropertyRegistry.add("spring.jpa.hibernate.hbm2ddl.auto", () -> "validate");
     log.info("Registered postgres properties");
   }
 
-  @BeforeAll
-  public static void setupMockedObject() {
+  @BeforeEach
+  public void setupMockedObject() {
     customerId = UUID.fromString("f87e1fad-0a7e-49f5-abcf-bfdad2fff7d2");
     mockedStoreId = UUID.randomUUID();
     mockedFirstProductDetails =
@@ -127,7 +148,7 @@ public class AbstractOrderIntegrationTest {
     mockedProducts = List.of(mockedFirstProductDetails, mockedSecondProductDetails);
     mockedStoreDetails = StoreDetails.builder().id(mockedStoreId).products(mockedProducts).build();
 
-    CreateOrderCommandBuilder createOrderCommandBuilder = CreateOrderCommand.builder();
+    createOrderCommandBuilder = CreateOrderCommand.builder();
     createOrderCommandBuilder.storeId(mockedStoreId);
     createOrderCommandBuilder.customerId(customerId);
     List<OrderItemDto> orderItemDtoList =
