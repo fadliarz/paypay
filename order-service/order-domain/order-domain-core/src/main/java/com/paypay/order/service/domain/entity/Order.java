@@ -26,6 +26,7 @@ public class Order {
 
   public void initializeOrder() {
     this.id = UUID.randomUUID();
+    this.orderStatus = OrderStatus.PENDING;
     initializeOrderItems();
   }
 
