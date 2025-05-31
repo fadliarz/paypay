@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS "order".orders;
 CREATE TABLE "order".orders
 (
   id               uuid                                           NOT NULL,
-  customer_ud      uuid                                           NOT NULL,
+  customer_id      uuid                                           NOT NULL,
   store_id         uuid                                           NOT NULL,
   delivery_address character varying COLLATE pg_catalog."default" NOT NULL,
   total_price      numeric(10, 2)                                 NOT NULL,
