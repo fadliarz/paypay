@@ -1,6 +1,7 @@
 package com.paypay.order.service.domain.entity;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
 public class OrderItem {
@@ -22,6 +23,18 @@ public class OrderItem {
   private void validateSubTotalPrice() {
     if (!subTotalPrice.equals(product.getPrice().multiply(BigDecimal.valueOf(quantity))))
       throw new RuntimeException();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    OrderItem orderItem = (OrderItem) o;
+    return quantity == orderItem.quantity
+        && Objects.equals(id, orderItem.id)
+        && Objects.equals(orderId, orderItem.orderId)
+        && Objects.equals(product, orderItem.product)
+        && Objects.equals(subTotalPrice, orderItem.subTotalPrice);
   }
 
   public Long getId() {
