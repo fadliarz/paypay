@@ -33,6 +33,22 @@
     <dependencies>
       <dependency>
         <groupId>com.paypay</groupId>
+        <artifactId>infrastructure</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>saga</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.paypay</groupId>
+        <artifactId>outbox</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.paypay</groupId>
         <artifactId>common</artifactId>
         <version>${project.version}</version>
       </dependency>

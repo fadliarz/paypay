@@ -20,6 +20,15 @@
   <dependencies>
     <dependency>
       <groupId>com.paypay</groupId>
+      <artifactId>outbox</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.paypay</groupId>
+      <artifactId>saga</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.paypay</groupId>
       <artifactId>order-application-service</artifactId>
     </dependency>
     <dependency>
