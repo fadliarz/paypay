@@ -27,14 +27,10 @@ public class CreateOrderIntegrationTest extends AbstractOrderIntegrationTest {
 
     Order orderResult = createOrderCommandHandler.handle(createOrderCommand).getOrder();
 
-    assertNotNull(orderResult);
-    assertNotNull(orderResult.getId());
-    Optional<Order> optionalSavedOrder = orderRepository.findOrder(orderResult.getId());
-    assertFalse(optionalSavedOrder.isEmpty());
-    Order savedOrder = optionalSavedOrder.get();
-    assertNotNull(savedOrder);
+    Optional<Order> response = orderRepository.findOrder(orderResult.getId());
+    assertFalse(response.isEmpty());
+    Order savedOrder = response.get();
     assertEquals(savedOrder, savedOrder);
-    assertNotNull(orderResult);
 
     List<OrderPaymentOutboxMessage> orderPaymentOutboxMessageList =
         paymentOutboxRepository.findByTypeAndOutboxStatusAndSagaStatusIn(
