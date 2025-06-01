@@ -3,13 +3,24 @@ package com.paypay.order.service.domain;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.paypay.saga.order.SagaConstants.ORDER_SAGA_NAME;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.paypay.order.service.client.store.entity.ProductDetails;
 import com.paypay.order.service.client.store.entity.StoreDetails;
+import com.paypay.order.service.domain.features.create.order.CreateOrderCommandHandler;
 import com.paypay.order.service.domain.features.create.order.dto.CreateOrderCommand;
 import com.paypay.order.service.domain.features.create.order.dto.OrderItemDto;
 import com.paypay.order.service.domain.mapper.OrderIntegrationTestDataMapper;
+import com.paypay.order.service.domain.outbox.model.payment.OrderPaymentOutboxMessage;
+import com.paypay.order.service.domain.ports.output.repository.OrderRepository;
+import com.paypay.order.service.domain.ports.output.repository.PaymentOutboxRepository;
+import com.paypay.outbox.OutboxStatus;
+import com.paypay.saga.SagaStatus;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.math.BigDecimal;
@@ -32,8 +43,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.TestcontainersExtension;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.utility.DockerImageName;
 
 @Slf4j
@@ -45,12 +54,16 @@ import org.testcontainers.utility.DockerImageName;
 @ExtendWith(TestcontainersExtension.class)
 public class AbstractOrderIntegrationTest {
 
+  @Autowired protected CreateOrderCommandHandler createOrderCommandHandler;
+  @Autowired protected OrderRepository orderRepository;
+  @Autowired protected PaymentOutboxRepository paymentOutboxRepository;
+  @Autowired protected static DataSource dataSource;
+
   protected static final PostgreSQLContainer<?> POSTGRE_SQL_CONTAINER;
   protected static final String ORDER_SCHEMA = "order";
 
   protected static final ObjectMapper objectMapper = new ObjectMapper();
   protected static WireMockServer wireMockServer;
-  @Autowired protected static DataSource dataSource;
 
   protected static CreateOrderCommand createOrderCommand;
   protected static CreateOrderCommand.CreateOrderCommandBuilder createOrderCommandBuilder;
@@ -70,6 +83,8 @@ public class AbstractOrderIntegrationTest {
   }
 
   static {
+    objectMapper.registerModule(new JavaTimeModule());
+
     wireMockServer = new WireMockServer(9121);
 
     POSTGRE_SQL_CONTAINER =
@@ -209,5 +224,12 @@ public class AbstractOrderIntegrationTest {
         get(urlPathEqualTo("/stores/" + mockedStoreId + "/products"))
             .willReturn(
                 aResponse().withStatus(404).withHeader("Content-Type", "application/json")));
+  }
+
+  protected void assertEmptyOrderPaymentOutboxMessage() {
+    List<OrderPaymentOutboxMessage> orderPaymentOutboxMessageList =
+        paymentOutboxRepository.findByTypeAndOutboxStatusAndSagaStatusIn(
+            ORDER_SAGA_NAME, OutboxStatus.STARTED, SagaStatus.STARTED);
+    assertEquals(0, orderPaymentOutboxMessageList.size());
   }
 }

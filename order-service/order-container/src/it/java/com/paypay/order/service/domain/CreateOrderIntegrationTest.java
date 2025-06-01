@@ -1,24 +1,25 @@
 package com.paypay.order.service.domain;
 
+import static com.paypay.saga.order.SagaConstants.ORDER_SAGA_NAME;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.paypay.order.service.domain.entity.Order;
 import com.paypay.order.service.domain.exception.CustomerNotFoundException;
 import com.paypay.order.service.domain.exception.StoreNotFoundException;
-import com.paypay.order.service.domain.features.create.order.CreateOrderCommandHandler;
-import com.paypay.order.service.domain.ports.output.repository.OrderRepository;
+import com.paypay.order.service.domain.outbox.model.payment.OrderPaymentEventPayload;
+import com.paypay.order.service.domain.outbox.model.payment.OrderPaymentOutboxMessage;
+import com.paypay.outbox.OutboxStatus;
+import com.paypay.saga.SagaStatus;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 public class CreateOrderIntegrationTest extends AbstractOrderIntegrationTest {
-
-  @Autowired private CreateOrderCommandHandler createOrderCommandHandler;
-  @Autowired private OrderRepository orderRepository;
 
   @Test
   void placeOrder_whenCommandIsValid_persistOrderAndItems() {
@@ -34,6 +35,20 @@ public class CreateOrderIntegrationTest extends AbstractOrderIntegrationTest {
     assertNotNull(savedOrder);
     assertEquals(savedOrder, savedOrder);
     assertNotNull(orderResult);
+
+    List<OrderPaymentOutboxMessage> orderPaymentOutboxMessageList =
+        paymentOutboxRepository.findByTypeAndOutboxStatusAndSagaStatusIn(
+            ORDER_SAGA_NAME, OutboxStatus.STARTED, SagaStatus.STARTED);
+    assertEquals(1, orderPaymentOutboxMessageList.size());
+    OrderPaymentEventPayload orderPaymentEventPayload;
+    try {
+      orderPaymentEventPayload =
+          objectMapper.readValue(
+              orderPaymentOutboxMessageList.get(0).getPayload(), OrderPaymentEventPayload.class);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to deserialize OrderPaymentEventPayload");
+    }
+    assertEquals(orderResult.getId(), UUID.fromString(orderPaymentEventPayload.getOrderId()));
   }
 
   @Test
@@ -44,6 +59,7 @@ public class CreateOrderIntegrationTest extends AbstractOrderIntegrationTest {
     assertThrows(
         RuntimeException.class,
         () -> createOrderCommandHandler.handle(createOrderCommandBuilder.build()));
+    assertEmptyOrderPaymentOutboxMessage();
   }
 
   @Test
@@ -53,6 +69,7 @@ public class CreateOrderIntegrationTest extends AbstractOrderIntegrationTest {
     assertNotNull(createOrderCommand);
     assertThrows(
         StoreNotFoundException.class, () -> createOrderCommandHandler.handle(createOrderCommand));
+    assertEmptyOrderPaymentOutboxMessage();
   }
 
   @Test
@@ -62,5 +79,6 @@ public class CreateOrderIntegrationTest extends AbstractOrderIntegrationTest {
     assertThrows(
         CustomerNotFoundException.class,
         () -> createOrderCommandHandler.handle(createOrderCommandBuilder.build()));
+    assertEmptyOrderPaymentOutboxMessage();
   }
 }
