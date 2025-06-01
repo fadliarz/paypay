@@ -32,7 +32,6 @@ CREATE TABLE "order".order_items
   CONSTRAINT order_items_pkey PRIMARY KEY (id, order_id)
 );
 
-
 ALTER TABLE "order".order_items
   ADD CONSTRAINT "FK_ORDER_ID" FOREIGN KEY (order_id)
     REFERENCES "order".orders (id) MATCH SIMPLE
@@ -47,4 +46,28 @@ CREATE TABLE "order".customers
   username   character varying COLLATE pg_catalog."default" NOT NULL,
   first_name character varying COLLATE pg_catalog."default" NOT NULL,
   last_name  character varying COLLATE pg_catalog."default" NOT NULL
-)
+);
+
+DROP TYPE IF EXISTS saga_status;
+CREATE TYPE saga_status AS ENUM ('STARTED', 'FAILED', 'SUCCEEDED', 'PROCESSING', 'COMPENSATING', 'COMPENSATED');
+
+DROP TYPE IF EXISTS outbox_status;
+CREATE TYPE outbox_stats AS ENUM ('STARTED', 'COMPLETED', 'FAILED');
+
+DROP TABLE IF EXISTS "order".payment_outbox CASCADE;
+CREATE TABLE "order".payment_outbox
+(
+  id            uuid                                           NOT NULl,
+  saga_id       uuid                                           NOT NULL,
+  created_at    TIMESTAMP WITH TIME ZONE                       NOT NULL,
+  processed_at  TIMESTAMP WITH TIME ZONE,
+  type          character varying COLLATE pg_catalog."default" NOT NULL,
+  payload       jsonb                                          NOT NULL,
+  order_status  order_status                                   NOT NULL,
+  saga_status   saga_status                                    NOT NULL,
+  outbox_status outbox_stats                                   NOT NULL,
+  version       integer                                        NOT NULL,
+  CONSTRAINT payment_outbox_pkey PRIMARY KEY (id)
+);
+
+CREATE INDEX "payment_outbox_saga_status" ON "order".payment_outbox (type, outbox_status, saga_status);
